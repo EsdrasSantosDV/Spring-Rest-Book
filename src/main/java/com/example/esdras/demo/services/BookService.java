@@ -11,7 +11,6 @@ public interface BookService
 
     List<Book> listBooks();
 
-
     Book getBookById(UUID id);
 
     Book saveNewBook(Book book);
@@ -21,7 +20,6 @@ public interface BookService
     Book deleteBookById(UUID id);
 
     Book patchBookById(UUID id, Book book);
-
 
 
 }
