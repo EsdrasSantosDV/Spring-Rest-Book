@@ -16,11 +16,11 @@ public interface BookService
 
     Book saveNewBook(Book book);
 
-    void updateBookById(UUID id, Book book);
+    Book updateBookById(UUID id, Book book);
 
     Book deleteBookById(UUID id);
 
-    void patchBookById(UUID id, Book book);
+    Book patchBookById(UUID id, Book book);
 
 
 

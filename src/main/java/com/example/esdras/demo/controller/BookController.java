@@ -30,14 +30,21 @@ public class BookController {
         return this.bookService.deleteBookById(id);
     }
 
-
-
     @RequestMapping(method = RequestMethod.POST)
     public Book saveNewBook(@RequestBody Book book){
         return this.bookService.saveNewBook(book);
     }
 
 
+    @RequestMapping(method = RequestMethod.PUT)
+    public Book updateBookById(@PathVariable("beerId") UUID id, @RequestBody Book book){
+        return this.bookService.updateBookById(id,book);
+    }
+
+    @RequestMapping(method=RequestMethod.PATCH)
+    public Book patchBookById(@PathVariable("beerId") UUID id, @RequestBody Book book){
+       return this.bookService.patchBookById(id,book);
+    }
 
 
 

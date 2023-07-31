@@ -55,8 +55,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void updateBookById(UUID id, Book book) {
+    public Book updateBookById(UUID id, Book book) {
+        var bookUpdated= this.bookMap.get(id);
+        if(bookUpdated!=null)
+        {
+            bookUpdated.setNameBook(book.getNameBook());
+            bookUpdated.setDescriptionName(book.getDescriptionName());
+            bookUpdated.setPrice(book.getPrice());
+            bookUpdated.setVersion(book.getVersion());
+        }
 
+
+        return  bookUpdated;
     }
 
     @Override
@@ -68,7 +78,19 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void patchBookById(UUID id, Book book) {
-
+    public Book patchBookById(UUID id, Book book) {
+        var bookPatched= this.bookMap.get(id);
+        if(bookPatched!=null)
+        {
+            if(book.getNameBook()!=null)
+                bookPatched.setNameBook(book.getNameBook());
+            if(book.getDescriptionName()!=null)
+                bookPatched.setDescriptionName(book.getDescriptionName());
+            if(book.getPrice()!=null)
+                bookPatched.setPrice(book.getPrice());
+            if(book.getVersion()!=null)
+                bookPatched.setVersion(book.getVersion());
+        }
+        return  bookPatched;
     }
 }
