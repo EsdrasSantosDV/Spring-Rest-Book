@@ -1,7 +1,7 @@
 package com.example.esdras.demo.controller;
 
 import com.example.esdras.demo.model.Book;
-import com.example.esdras.demo.services.BookService;
+import com.example.esdras.demo.services.interfaces.BookService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,7 @@
 package com.example.esdras.demo.services;
 
 import com.example.esdras.demo.model.Book;
+import com.example.esdras.demo.services.interfaces.BookService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.util.*;
 @Service
 public class BookServiceImpl implements BookService {
 
-    private final Map<UUID,Book> bookMap;
+    private final Map<UUID, Book> bookMap;
 
 
     public BookServiceImpl(
@@ -24,7 +25,7 @@ public class BookServiceImpl implements BookService {
                 descriptionName("MUITO BOM").price(new BigDecimal("100.00")).version(1).build();
         Book book2 = Book.builder().id(UUID.randomUUID()).nameBook("Arquitetura 2").
                 descriptionName("MUITO BOM d").price(new BigDecimal("100.00")).version(1).build();
-        Book book3 = Book.builder().id(UUID.randomUUID()).nameBook("Arquitetura 3" ).
+        Book book3 = Book.builder().id(UUID.randomUUID()).nameBook("Arquitetura 3").
                 descriptionName("MUITO BOM D").price(new BigDecimal("100.00")).version(1).build();
 
         this.bookMap.put(book1.getId(),book1);

@@ -1,4 +1,4 @@
-package com.example.esdras.demo.services;
+package com.example.esdras.demo.services.interfaces;
 
 
 import com.example.esdras.demo.model.Book;
