@@ -5,6 +5,9 @@ import com.example.esdras.demo.services.interfaces.BookService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +41,13 @@ public class BookController {
     }
 
     @PostMapping
-    public Book saveNewBook(@RequestBody Book book){
-        return this.bookService.saveNewBook(book);
+    public ResponseEntity saveNewBook(@RequestBody Book book){
+
+        Book savedBook = this.bookService.saveNewBook(book);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/api/v1/book/" + savedBook.getId().toString());
+
+        return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
 

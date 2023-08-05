@@ -1,5 +1,6 @@
 package com.example.esdras.demo.controller;
 
+import com.example.esdras.demo.model.Book;
 import com.example.esdras.demo.model.Customer;
 import com.example.esdras.demo.services.interfaces.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +19,6 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-
-
-    @DeleteMapping("{customerId}")
-    public Customer deleteCustomerById(@PathVariable("customerId") UUID customerId){
-        return customerService.deleteCustomerId(customerId);
-    }
-
-    @PutMapping("{customerId}")
-    public Customer updateCustomerByID(@PathVariable("customerId") UUID customerId,
-                                             @RequestBody Customer customer){
-        return customerService.updateCustomerById(customerId, customer);
-    }
-
-    @PostMapping
-    public Customer handlePost(@RequestBody Customer customer){
-        return customerService.saveCustomer(customer);
-    }
-
     @GetMapping()
     public List<Customer> listAllCustomers(){
         return customerService.listCustomers();
@@ -45,6 +28,31 @@ public class CustomerController {
     public Customer getCustomerById(@PathVariable("customerId") UUID id){
         return customerService.getCustomerId(id);
     }
+
+    @DeleteMapping("{customerId}")
+    public Customer deleteCustomerById(@PathVariable("customerId") UUID customerId){
+        return customerService.deleteCustomerId(customerId);
+    }
+
+    @PostMapping
+    public ResponseEntity createBook(@RequestBody Customer customer){
+        Customer customerCreated= customerService.saveCustomer(customer);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/api/v1/customer/" + customerCreated.getId().toString());
+
+        return new ResponseEntity(headers, HttpStatus.CREATED);
+    }
+
+    @PutMapping("{customerId}")
+    public Customer updateCustomerByID(@PathVariable("customerId") UUID customerId,
+                                             @RequestBody Customer customer){
+        return customerService.updateCustomerById(customerId, customer);
+    }
+
+
+
+
 
     @PatchMapping("{customerId}")
     public Customer patchCustomerById(@PathVariable("customerId") UUID customerId,
