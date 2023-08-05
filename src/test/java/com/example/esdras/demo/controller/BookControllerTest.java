@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.hamcrest.core.Is.is;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,12 +35,35 @@ class BookControllerTest {
     BookServiceImpl bookServiceImpl=new BookServiceImpl();
 
     @Test
+    void listAllBooks() throws Exception{
+        //
+        given(bookService.listBooks()).willReturn(bookServiceImpl.listBooks());
+
+        mockMvc.perform(get("/api/v1/book")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()",is(3)))
+                .andExpect(jsonPath("$[0].id", is(bookServiceImpl.listBooks().get(0).getId().toString())))
+                .andExpect(jsonPath("$[0].nameBook", is(bookServiceImpl.listBooks().get(0).getNameBook())));
+    }
+
+
+    @Test
     void getBookById() throws Exception {
         Book testBook=bookServiceImpl.listBooks().get(0);
         given(bookService.getBookById(testBook.getId())).willReturn(testBook);
+
+        //ESSAS IMPORTACOES ESTATICAS SÃO UMA MERDA
+        //SEMPRE COPIA ELAS DAQUI
+        //TO TESTNBADO PRO PRIMEIRO LIVRO QUE TA NO SET, AGORA TO ESPERANDO QUE SEJA UM JSON
         mockMvc.perform(get("/api/v1/book/" +  testBook.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(testBook.getId().toString())))
+                .andExpect(jsonPath("$.nameBook", is(testBook.getNameBook())));
+        //aqui e o que eseperamos
+
     }
 }

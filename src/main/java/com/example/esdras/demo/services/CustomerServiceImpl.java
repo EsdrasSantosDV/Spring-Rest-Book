@@ -45,7 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerMap.put(customer3.getId(), customer3);
     }
     @Override
-    public List<Customer> listCustomer() {
+    public List<Customer> listCustomers() {
         return new ArrayList<>(customerMap.values());
     }
 
