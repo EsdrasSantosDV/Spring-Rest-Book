@@ -2,7 +2,7 @@ package com.example.esdras.demo.controller;
 
 import com.example.esdras.demo.dto.BookDto;
 
-import com.example.esdras.demo.services.BookServiceImpl;
+import com.example.esdras.demo.services.mock.BookServiceImpl;
 import com.example.esdras.demo.services.interfaces.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

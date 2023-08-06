@@ -1,7 +1,7 @@
 package com.example.esdras.demo.controller;
 
 import com.example.esdras.demo.dto.CustomerDto;
-import com.example.esdras.demo.services.CustomerServiceImpl;
+import com.example.esdras.demo.services.mock.CustomerServiceImpl;
 import com.example.esdras.demo.services.interfaces.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
