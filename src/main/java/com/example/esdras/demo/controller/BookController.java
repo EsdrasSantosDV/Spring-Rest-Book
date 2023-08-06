@@ -1,9 +1,8 @@
 package com.example.esdras.demo.controller;
 
 import com.example.esdras.demo.exceptions.NotFoundException;
-import com.example.esdras.demo.model.Book;
+import com.example.esdras.demo.dto.BookDto;
 import com.example.esdras.demo.services.interfaces.BookService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -26,27 +25,27 @@ public class BookController {
 
 
     @GetMapping(BOOK_PATH)
-    public List<Book> listBooks(){
+    public List<BookDto> listBooks(){
         return this.bookService.listBooks();
     }
 
     @GetMapping(BOOK_PATH_ID)
-    public Book getBookById(@PathVariable("bookId") UUID id){
+    public BookDto getBookById(@PathVariable("bookId") UUID id){
         return this.bookService.getBookById(id).orElseThrow(NotFoundException::new);
     }
 
 
     @DeleteMapping(BOOK_PATH_ID)
     public ResponseEntity deleteBookById(@PathVariable("bookId") UUID id){
-        Book bookDeleted = this.bookService.deleteBookById(id);
+        BookDto bookDeleted = this.bookService.deleteBookById(id);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(BOOK_PATH)
-    public ResponseEntity saveNewBook(@RequestBody Book book){
+    public ResponseEntity saveNewBook(@RequestBody BookDto book){
 
-        Book savedBook = this.bookService.saveNewBook(book);
+        BookDto savedBook = this.bookService.saveNewBook(book);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", BOOK_PATH+'/' + savedBook.getId().toString());
 
@@ -55,14 +54,14 @@ public class BookController {
 
 
     @PutMapping(BOOK_PATH_ID)
-    public ResponseEntity updateBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
-        Book bookPut= this.bookService.updateBookById(id,book);
+    public ResponseEntity updateBookById(@PathVariable("bookId") UUID id, @RequestBody BookDto book){
+        BookDto bookPut= this.bookService.updateBookById(id,book);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(BOOK_PATH_ID)
-    public ResponseEntity patchBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
-        Book bookPatched= this.bookService.patchBookById(id,book);
+    public ResponseEntity patchBookById(@PathVariable("bookId") UUID id, @RequestBody BookDto book){
+        BookDto bookPatched= this.bookService.patchBookById(id,book);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

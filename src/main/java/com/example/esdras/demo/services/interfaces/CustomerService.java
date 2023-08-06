@@ -1,22 +1,22 @@
 package com.example.esdras.demo.services.interfaces;
 
 
-import com.example.esdras.demo.model.Customer;
+import com.example.esdras.demo.dto.CustomerDto;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
-    List<Customer> listCustomers();
+    List<CustomerDto> listCustomers();
 
-    Optional<Customer> getCustomerId(UUID id);
+    Optional<CustomerDto> getCustomerId(UUID id);
 
-    Customer saveCustomer(Customer customer);
+    CustomerDto saveCustomer(CustomerDto customer);
 
-    Customer updateCustomerById(UUID id, Customer customer);
+    CustomerDto updateCustomerById(UUID id, CustomerDto customer);
 
-    Customer deleteCustomerId(UUID id);
+    CustomerDto deleteCustomerId(UUID id);
 
-    Customer patchCustomer(UUID id, Customer customer);
+    CustomerDto patchCustomer(UUID id, CustomerDto customer);
 }

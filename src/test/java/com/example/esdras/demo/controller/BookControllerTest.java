@@ -1,10 +1,9 @@
 package com.example.esdras.demo.controller;
 
-import com.example.esdras.demo.model.Book;
+import com.example.esdras.demo.dto.BookDto;
 
 import com.example.esdras.demo.services.BookServiceImpl;
 import com.example.esdras.demo.services.interfaces.BookService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 //TESTAMOS SO A CLASSE BOOK CONTROLLER
 @WebMvcTest(BookController.class)
@@ -53,7 +51,7 @@ class BookControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Book> bookArgumentCaptor;
+    ArgumentCaptor<BookDto> bookArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -62,7 +60,7 @@ class BookControllerTest {
 
     @Test
     void patchBook()throws Exception{
-        Book book=bookServiceImpl.listBooks().get(0);
+        BookDto book=bookServiceImpl.listBooks().get(0);
         Map<String,Object> bookMap=new HashMap<>();
         bookMap.put("nameBook","New Title");
         mockMvc.perform(patch(BookController.BOOK_PATH_ID,book.getId())
@@ -81,7 +79,7 @@ class BookControllerTest {
 
     @Test
     void deleteBook()throws Exception{
-        Book book=bookServiceImpl.listBooks().get(0);
+        BookDto book=bookServiceImpl.listBooks().get(0);
         mockMvc.perform(delete(BookController.BOOK_PATH_ID,book.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -93,13 +91,13 @@ class BookControllerTest {
 
     @Test
     void updateBook() throws Exception {
-        Book book=bookServiceImpl.listBooks().get(0);
+        BookDto book=bookServiceImpl.listBooks().get(0);
         mockMvc.perform(put(BookController.BOOK_PATH+"/"+book.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(book)))
                 .andExpect(status().isNoContent());
-        verify(bookService).updateBookById(any(UUID.class), any(Book.class));
+        verify(bookService).updateBookById(any(UUID.class), any(BookDto.class));
 
     }
 
@@ -107,12 +105,12 @@ class BookControllerTest {
 
     @Test
     void createBook() throws Exception {
-        Book testBook=bookServiceImpl.listBooks().get(0);
+        BookDto testBook=bookServiceImpl.listBooks().get(0);
         testBook.setVersion(null);
         testBook.setId(null);
 
 
-        given(bookService.saveNewBook(any(Book.class))).willReturn(bookServiceImpl.listBooks().get(1));
+        given(bookService.saveNewBook(any(BookDto.class))).willReturn(bookServiceImpl.listBooks().get(1));
         mockMvc.perform(post(BookController.BOOK_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,7 +147,7 @@ class BookControllerTest {
 
     @Test
     void getBookById() throws Exception {
-        Book testBook=bookServiceImpl.listBooks().get(0);
+        BookDto testBook=bookServiceImpl.listBooks().get(0);
         given(bookService.getBookById(testBook.getId())).willReturn(Optional.of(testBook));
 
         //ESSAS IMPORTACOES ESTATICAS SÃO UMA MERDA

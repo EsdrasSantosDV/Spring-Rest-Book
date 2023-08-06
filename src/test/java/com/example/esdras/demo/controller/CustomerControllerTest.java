@@ -1,10 +1,8 @@
 package com.example.esdras.demo.controller;
 
-import com.example.esdras.demo.model.Book;
-import com.example.esdras.demo.model.Customer;
+import com.example.esdras.demo.dto.CustomerDto;
 import com.example.esdras.demo.services.CustomerServiceImpl;
 import com.example.esdras.demo.services.interfaces.CustomerService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.core.Is.is;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +45,7 @@ class CustomerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Customer> customerArgumentCaptor;
+    ArgumentCaptor<CustomerDto> customerArgumentCaptor;
 
 
     @BeforeEach
@@ -59,7 +55,7 @@ class CustomerControllerTest {
 
     @Test
     void testPatchCustomer() throws Exception {
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDto customer = customerServiceImpl.listCustomers().get(0);
 
         //FAZER O MAP DO POJO PARA JSON
         Map<String, Object> customerMap = new HashMap<>();
@@ -80,7 +76,7 @@ class CustomerControllerTest {
     }
     @Test
     void deleteCustomer() throws Exception{
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDto customer = customerServiceImpl.listCustomers().get(0);
 
         mockMvc.perform(delete(CustomerController.CUSTOMER_PATH + '/' + customer.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -93,7 +89,7 @@ class CustomerControllerTest {
 
     @Test
     void putCustomer() throws Exception {
-        Customer customer = customerServiceImpl.listCustomers().get(0);
+        CustomerDto customer = customerServiceImpl.listCustomers().get(0);
 
         mockMvc.perform(put(CustomerController.CUSTOMER_PATH + '/' + customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -101,18 +97,18 @@ class CustomerControllerTest {
                         .content(objectMapper.writeValueAsString(customer)))
                         .andExpect(status().isNoContent());
 
-        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+        verify(customerService).updateCustomerById(any(UUID.class), any(CustomerDto.class));
     }
 
 
     @Test
     void createCustomer() throws Exception {
-        Customer createCustomer=customerServiceImpl.listCustomers().get(0);
+        CustomerDto createCustomer=customerServiceImpl.listCustomers().get(0);
 
         createCustomer.setId(null);
         createCustomer.setName("Esdras");
 
-        given(customerService.saveCustomer((any(Customer.class)))).willReturn(customerServiceImpl.listCustomers().get(1));
+        given(customerService.saveCustomer((any(CustomerDto.class)))).willReturn(customerServiceImpl.listCustomers().get(1));
 
         mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
@@ -151,7 +147,7 @@ class CustomerControllerTest {
     @Test
     void getCustomerById() throws Exception {
 
-        Customer customerGet=customerServiceImpl.listCustomers().get(0);
+        CustomerDto customerGet=customerServiceImpl.listCustomers().get(0);
         given(customerService.getCustomerId(customerServiceImpl.listCustomers().get(0).getId())).willReturn(Optional.of(customerGet));
 
         mockMvc.perform(get(CustomerController.CUSTOMER_PATH+ '/' + customerServiceImpl.listCustomers().get(0).getId()).accept(MediaType.APPLICATION_JSON))

@@ -1,7 +1,7 @@
 package com.example.esdras.demo.services.interfaces;
 
 
-import com.example.esdras.demo.model.Book;
+import com.example.esdras.demo.dto.BookDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,17 +10,17 @@ import java.util.UUID;
 public interface BookService
 {
 
-    List<Book> listBooks();
+    List<BookDto> listBooks();
 
-    Optional<Book> getBookById(UUID id);
+    Optional<BookDto> getBookById(UUID id);
 
-    Book saveNewBook(Book book);
+    BookDto saveNewBook(BookDto book);
 
-    Book updateBookById(UUID id, Book book);
+    BookDto updateBookById(UUID id, BookDto book);
 
-    Book deleteBookById(UUID id);
+    BookDto deleteBookById(UUID id);
 
-    Book patchBookById(UUID id, Book book);
+    BookDto patchBookById(UUID id, BookDto book);
 
 
 }

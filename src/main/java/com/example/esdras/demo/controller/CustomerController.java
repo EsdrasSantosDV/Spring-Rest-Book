@@ -1,8 +1,7 @@
 package com.example.esdras.demo.controller;
 
 import com.example.esdras.demo.exceptions.NotFoundException;
-import com.example.esdras.demo.model.Book;
-import com.example.esdras.demo.model.Customer;
+import com.example.esdras.demo.dto.CustomerDto;
 import com.example.esdras.demo.services.interfaces.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -24,24 +23,24 @@ public class CustomerController {
 
 
     @GetMapping(CUSTOMER_PATH)
-    public List<Customer> listAllCustomers(){
+    public List<CustomerDto> listAllCustomers(){
         return customerService.listCustomers();
     }
 
     @GetMapping(CUSTOMER_PATH_ID)
-    public Customer getCustomerById(@PathVariable("customerId") UUID id){
+    public CustomerDto getCustomerById(@PathVariable("customerId") UUID id){
         return customerService.getCustomerId(id).orElseThrow(NotFoundException::new);
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity deleteCustomerById(@PathVariable("customerId") UUID customerId){
-        Customer customerDeleted= customerService.deleteCustomerId(customerId);
+        CustomerDto customerDeleted= customerService.deleteCustomerId(customerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity createBook(@RequestBody Customer customer){
-        Customer customerCreated= customerService.saveCustomer(customer);
+    public ResponseEntity createBook(@RequestBody CustomerDto customer){
+        CustomerDto customerCreated= customerService.saveCustomer(customer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", CUSTOMER_PATH+'/' + customerCreated.getId().toString());
@@ -51,8 +50,8 @@ public class CustomerController {
 
     @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity updateCustomerByID(@PathVariable("customerId") UUID customerId,
-                                             @RequestBody Customer customer){
-        Customer customerUpdated = customerService.updateCustomerById(customerId, customer);
+                                             @RequestBody CustomerDto customer){
+        CustomerDto customerUpdated = customerService.updateCustomerById(customerId, customer);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -61,8 +60,8 @@ public class CustomerController {
 
     @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity patchCustomerById(@PathVariable("customerId") UUID customerId,
-                                            @RequestBody Customer customer){
-        Customer patchedCustomer = customerService.patchCustomer(customerId, customer);
+                                            @RequestBody CustomerDto customer){
+        CustomerDto patchedCustomer = customerService.patchCustomer(customerId, customer);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

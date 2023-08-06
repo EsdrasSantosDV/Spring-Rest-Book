@@ -1,4 +1,4 @@
-package com.example.esdras.demo.model;
+package com.example.esdras.demo.dto;
 
 
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @Builder
 @Getter
-public class Book {
+public class BookDto {
 
     private UUID id;
     private Integer version;

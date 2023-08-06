@@ -1,6 +1,6 @@
 package com.example.esdras.demo.services;
 
-import com.example.esdras.demo.model.Book;
+import com.example.esdras.demo.dto.BookDto;
 import com.example.esdras.demo.services.interfaces.BookService;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.*;
 @Service
 public class BookServiceImpl implements BookService {
 
-    private final Map<UUID, Book> bookMap;
+    private final Map<UUID, BookDto> bookMap;
 
 
     public BookServiceImpl(
@@ -21,11 +21,11 @@ public class BookServiceImpl implements BookService {
     {
         this.bookMap=new HashMap<>();
 
-        Book book1 = Book.builder().id(UUID.randomUUID()).nameBook("Arquitetura").
+        BookDto book1 = BookDto.builder().id(UUID.randomUUID()).nameBook("Arquitetura").
                 descriptionName("MUITO BOM").price(new BigDecimal("100.00")).version(1).build();
-        Book book2 = Book.builder().id(UUID.randomUUID()).nameBook("Arquitetura 2").
+        BookDto book2 = BookDto.builder().id(UUID.randomUUID()).nameBook("Arquitetura 2").
                 descriptionName("MUITO BOM d").price(new BigDecimal("100.00")).version(1).build();
-        Book book3 = Book.builder().id(UUID.randomUUID()).nameBook("Arquitetura 3").
+        BookDto book3 = BookDto.builder().id(UUID.randomUUID()).nameBook("Arquitetura 3").
                 descriptionName("MUITO BOM D").price(new BigDecimal("100.00")).version(1).build();
 
         this.bookMap.put(book1.getId(),book1);
@@ -36,17 +36,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> listBooks() {
+    public List<BookDto> listBooks() {
         return new ArrayList<>(this.bookMap.values());
     }
 
     @Override
-    public Optional<Book> getBookById(UUID id) {
+    public Optional<BookDto> getBookById(UUID id) {
         return Optional.of(this.bookMap.get(id));
     }
 
     @Override
-    public Book saveNewBook(Book book) {
+    public BookDto saveNewBook(BookDto book) {
         book.setId(UUID.randomUUID());
 
         this.bookMap.put(book.getId(),book);
@@ -56,7 +56,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book updateBookById(UUID id, Book book) {
+    public BookDto updateBookById(UUID id, BookDto book) {
         var bookUpdated= this.bookMap.get(id);
         if(bookUpdated!=null)
         {
@@ -71,7 +71,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book deleteBookById(UUID id) {
+    public BookDto deleteBookById(UUID id) {
         var bookDeleted= this.bookMap.get(id);
         if(bookDeleted!=null)
             this.bookMap.remove(id);
@@ -79,7 +79,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book patchBookById(UUID id, Book book) {
+    public BookDto patchBookById(UUID id, BookDto book) {
         var bookPatched= this.bookMap.get(id);
         if(bookPatched!=null)
         {
