@@ -16,26 +16,26 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-//AO INVES DE MAPEARMOS CADA COM O REQUEST MAPPING PODEMOS OCLOCAR ASSIM
-@RequestMapping("/api/v1/book")
 public class BookController {
     private final BookService bookService;
 
+    public static final String BOOK_PATH = "/api/v1/book";
+    public static final String BOOK_PATH_ID = BOOK_PATH + "/{bookId}";
 
-    //@RequestMapping(method = RequestMethod.GET)
+
+
     @GetMapping
     public List<Book> listBooks(){
         return this.bookService.listBooks();
     }
 
-    //@RequestMapping(value = "{beerId}",method = RequestMethod.GET)
-    @GetMapping("/{bookId}")
+    @GetMapping(BOOK_PATH_ID)
     public Book getBookById(@PathVariable("bookId") UUID id){
         return this.bookService.getBookById(id);
     }
 
-    //RequestMapping(value = "{beerId}",method = RequestMethod.DELETE)
-    @DeleteMapping({"/{bookId}"})
+
+    @DeleteMapping(BOOK_PATH_ID)
     public Book deleteBookById(@PathVariable("bookId") UUID id){
         return this.bookService.deleteBookById(id);
     }
@@ -45,18 +45,19 @@ public class BookController {
 
         Book savedBook = this.bookService.saveNewBook(book);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/book/" + savedBook.getId().toString());
+        headers.add("Location", BOOK_PATH+'/' + savedBook.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
 
-    @PutMapping({"/{bookId}"})
-    public Book updateBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
-        return this.bookService.updateBookById(id,book);
+    @PutMapping(BOOK_PATH_ID)
+    public ResponseEntity updateBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
+        Book bookPut= this.bookService.updateBookById(id,book);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping({"/{bookId}"})
+    @PatchMapping(BOOK_PATH_ID)
     public Book patchBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
        return this.bookService.patchBookById(id,book);
     }
