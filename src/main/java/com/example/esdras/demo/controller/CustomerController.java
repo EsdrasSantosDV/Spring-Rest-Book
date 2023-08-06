@@ -1,5 +1,6 @@
 package com.example.esdras.demo.controller;
 
+import com.example.esdras.demo.exceptions.NotFoundException;
 import com.example.esdras.demo.model.Book;
 import com.example.esdras.demo.model.Customer;
 import com.example.esdras.demo.services.interfaces.CustomerService;
@@ -29,7 +30,7 @@ public class CustomerController {
 
     @GetMapping(CUSTOMER_PATH_ID)
     public Customer getCustomerById(@PathVariable("customerId") UUID id){
-        return customerService.getCustomerId(id);
+        return customerService.getCustomerId(id).orElseThrow(NotFoundException::new);
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)

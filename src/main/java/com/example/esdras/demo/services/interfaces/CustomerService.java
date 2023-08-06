@@ -4,12 +4,13 @@ package com.example.esdras.demo.services.interfaces;
 import com.example.esdras.demo.model.Customer;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
     List<Customer> listCustomers();
 
-    Customer getCustomerId(UUID id);
+    Optional<Customer> getCustomerId(UUID id);
 
     Customer saveCustomer(Customer customer);
 

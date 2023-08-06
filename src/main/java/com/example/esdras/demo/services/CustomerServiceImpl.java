@@ -1,5 +1,6 @@
 package com.example.esdras.demo.services;
 
+import com.example.esdras.demo.exceptions.NotFoundException;
 import com.example.esdras.demo.model.Customer;
 import com.example.esdras.demo.services.interfaces.CustomerService;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +51,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerId(UUID id) {
-        return customerMap.get(id);
+    public Optional<Customer> getCustomerId(UUID id) {
+        return Optional.of(customerMap.get(id));
     }
 
     @Override

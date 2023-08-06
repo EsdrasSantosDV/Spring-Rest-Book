@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
@@ -73,7 +74,7 @@ class BookControllerTest {
         verify(bookService).patchBookById(uuidArgumentCaptor.capture(),bookArgumentCaptor.capture());
 
         assertThat(uuidArgumentCaptor.getValue()).isEqualTo(book.getId());
-        
+
         assertThat(bookArgumentCaptor.getValue().getNameBook()).isEqualTo(bookMap.get("nameBook"));
 
     }
@@ -101,6 +102,8 @@ class BookControllerTest {
         verify(bookService).updateBookById(any(UUID.class), any(Book.class));
 
     }
+
+
 
     @Test
     void createBook() throws Exception {
@@ -133,11 +136,21 @@ class BookControllerTest {
                 .andExpect(jsonPath("$[0].nameBook", is(bookServiceImpl.listBooks().get(0).getNameBook())));
     }
 
+    //VAMOS LANÇAR UMA EXCEÇÃO COM O MOCKITO
+    @Test
+    void getBookByIdNotFound() throws Exception{
+        given(bookService.getBookById(any(UUID.class))).willReturn(Optional.empty());
+
+        mockMvc.perform(get(BookController.BOOK_PATH+'/'+UUID.randomUUID())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 
     @Test
     void getBookById() throws Exception {
         Book testBook=bookServiceImpl.listBooks().get(0);
-        given(bookService.getBookById(testBook.getId())).willReturn(testBook);
+        given(bookService.getBookById(testBook.getId())).willReturn(Optional.of(testBook));
 
         //ESSAS IMPORTACOES ESTATICAS SÃO UMA MERDA
         //SEMPRE COPIA ELAS DAQUI

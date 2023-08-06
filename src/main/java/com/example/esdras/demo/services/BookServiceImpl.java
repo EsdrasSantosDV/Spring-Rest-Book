@@ -41,8 +41,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book getBookById(UUID id) {
-        return this.bookMap.get(id);
+    public Optional<Book> getBookById(UUID id) {
+        return Optional.of(this.bookMap.get(id));
     }
 
     @Override

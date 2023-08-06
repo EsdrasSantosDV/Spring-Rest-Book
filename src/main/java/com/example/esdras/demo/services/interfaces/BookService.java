@@ -4,6 +4,7 @@ package com.example.esdras.demo.services.interfaces;
 import com.example.esdras.demo.model.Book;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BookService
@@ -11,7 +12,7 @@ public interface BookService
 
     List<Book> listBooks();
 
-    Book getBookById(UUID id);
+    Optional<Book> getBookById(UUID id);
 
     Book saveNewBook(Book book);
 

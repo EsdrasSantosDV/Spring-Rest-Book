@@ -1,5 +1,6 @@
 package com.example.esdras.demo.controller;
 
+import com.example.esdras.demo.exceptions.NotFoundException;
 import com.example.esdras.demo.model.Book;
 import com.example.esdras.demo.services.interfaces.BookService;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ public class BookController {
 
     @GetMapping(BOOK_PATH_ID)
     public Book getBookById(@PathVariable("bookId") UUID id){
-        return this.bookService.getBookById(id);
+        return this.bookService.getBookById(id).orElseThrow(NotFoundException::new);
     }
 
 

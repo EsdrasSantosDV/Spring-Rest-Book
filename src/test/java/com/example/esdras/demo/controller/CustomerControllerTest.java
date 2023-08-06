@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
@@ -137,10 +138,21 @@ class CustomerControllerTest {
     }
 
     @Test
+    void getCustomerByIdNotFound() throws Exception{
+        given(customerService.getCustomerId(any(UUID.class))).willReturn(Optional.empty());
+
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH+'/'+UUID.randomUUID())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+    @Test
     void getCustomerById() throws Exception {
 
-
-        given(customerService.getCustomerId(customerServiceImpl.listCustomers().get(0).getId())).willReturn(customerServiceImpl.listCustomers().get(0));
+        Customer customerGet=customerServiceImpl.listCustomers().get(0);
+        given(customerService.getCustomerId(customerServiceImpl.listCustomers().get(0).getId())).willReturn(Optional.of(customerGet));
 
         mockMvc.perform(get(CustomerController.CUSTOMER_PATH+ '/' + customerServiceImpl.listCustomers().get(0).getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
