@@ -33,8 +33,9 @@ public class CustomerController {
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
-    public Customer deleteCustomerById(@PathVariable("customerId") UUID customerId){
-        return customerService.deleteCustomerId(customerId);
+    public ResponseEntity deleteCustomerById(@PathVariable("customerId") UUID customerId){
+        Customer customerDeleted= customerService.deleteCustomerId(customerId);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(CUSTOMER_PATH)

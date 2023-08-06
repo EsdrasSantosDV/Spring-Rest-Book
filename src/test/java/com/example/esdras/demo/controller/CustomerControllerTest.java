@@ -16,8 +16,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.core.Is.is;
 
@@ -26,7 +29,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 @WebMvcTest(CustomerController.class)
 class CustomerControllerTest {
 
@@ -53,6 +56,38 @@ class CustomerControllerTest {
         customerServiceImpl=new CustomerServiceImpl();
     }
 
+    @Test
+    void testPatchCustomer() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        //FAZER O MAP DO POJO PARA JSON
+        Map<String, Object> customerMap = new HashMap<>();
+        customerMap.put("name", "New Name");
+        System.out.println(customerMap);
+
+        mockMvc.perform(patch( CustomerController.CUSTOMER_PATH_ID, customer.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerMap)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).patchCustomer(uuidArgumentCaptor.capture(),
+                customerArgumentCaptor.capture());
+
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(customer.getId());
+        assertThat(customerArgumentCaptor.getValue().getName())
+                .isEqualTo(customerMap.get("name"));
+    }
+    @Test
+    void deleteCustomer() throws Exception{
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        mockMvc.perform(delete(CustomerController.CUSTOMER_PATH + '/' + customer.getId()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).deleteCustomerId(uuidArgumentCaptor.capture());
+
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(customer.getId());
+    }
 
 
     @Test
@@ -93,7 +128,7 @@ class CustomerControllerTest {
     void listAllCustomers() throws Exception {
         given(customerService.listCustomers()).willReturn(customerServiceImpl.listCustomers());
 
-        mockMvc.perform(get(BookController.BOOK_PATH) .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH) .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.length()",is(3)))

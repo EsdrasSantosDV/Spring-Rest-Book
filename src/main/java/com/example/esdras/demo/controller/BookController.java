@@ -36,8 +36,10 @@ public class BookController {
 
 
     @DeleteMapping(BOOK_PATH_ID)
-    public Book deleteBookById(@PathVariable("bookId") UUID id){
-        return this.bookService.deleteBookById(id);
+    public ResponseEntity deleteBookById(@PathVariable("bookId") UUID id){
+        Book bookDeleted = this.bookService.deleteBookById(id);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(BOOK_PATH)
@@ -58,8 +60,9 @@ public class BookController {
     }
 
     @PatchMapping(BOOK_PATH_ID)
-    public Book patchBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
-       return this.bookService.patchBookById(id,book);
+    public ResponseEntity patchBookById(@PathVariable("bookId") UUID id, @RequestBody Book book){
+        Book bookPatched= this.bookService.patchBookById(id,book);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 

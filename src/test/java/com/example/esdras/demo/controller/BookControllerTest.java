@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
@@ -25,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 //TESTAMOS SO A CLASSE BOOK CONTROLLER
@@ -57,6 +59,36 @@ class BookControllerTest {
         bookServiceImpl=new BookServiceImpl();
     }
 
+    @Test
+    void patchBook()throws Exception{
+        Book book=bookServiceImpl.listBooks().get(0);
+        Map<String,Object> bookMap=new HashMap<>();
+        bookMap.put("nameBook","New Title");
+        mockMvc.perform(patch(BookController.BOOK_PATH_ID,book.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookMap)))
+                .andExpect(status().isNoContent());
+
+        verify(bookService).patchBookById(uuidArgumentCaptor.capture(),bookArgumentCaptor.capture());
+
+        assertThat(uuidArgumentCaptor.getValue()).isEqualTo(book.getId());
+        
+        assertThat(bookArgumentCaptor.getValue().getNameBook()).isEqualTo(bookMap.get("nameBook"));
+
+    }
+
+    @Test
+    void deleteBook()throws Exception{
+        Book book=bookServiceImpl.listBooks().get(0);
+        mockMvc.perform(delete(BookController.BOOK_PATH_ID,book.getId()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        //ESTAMOS VERIFICANDO SE ESSE METODO FOI CHAMADO COM O ARGUMENTO QUE PASSAMOS
+        verify(bookService).deleteBookById(uuidArgumentCaptor.capture());
+        //AI CAPTURAMOS O ARGUMENTO QUE FOI PASSADO PRA ESSE METODO E VERIFICAMOS SE É O MESMO QUE PASSAMOS
+        assertThat(book.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+    }
 
     @Test
     void updateBook() throws Exception {
@@ -67,6 +99,7 @@ class BookControllerTest {
                         .content(objectMapper.writeValueAsString(book)))
                 .andExpect(status().isNoContent());
         verify(bookService).updateBookById(any(UUID.class), any(Book.class));
+
     }
 
     @Test
@@ -89,7 +122,6 @@ class BookControllerTest {
 
     @Test
     void listAllBooks() throws Exception{
-        //
         given(bookService.listBooks()).willReturn(bookServiceImpl.listBooks());
 
         mockMvc.perform(get(BookController.BOOK_PATH)
