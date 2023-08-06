@@ -24,7 +24,7 @@ public class BookController {
 
 
 
-    @GetMapping
+    @GetMapping(BOOK_PATH)
     public List<Book> listBooks(){
         return this.bookService.listBooks();
     }
@@ -40,7 +40,7 @@ public class BookController {
         return this.bookService.deleteBookById(id);
     }
 
-    @PostMapping
+    @PostMapping(BOOK_PATH)
     public ResponseEntity saveNewBook(@RequestBody Book book){
 
         Book savedBook = this.bookService.saveNewBook(book);

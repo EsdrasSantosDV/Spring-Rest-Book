@@ -22,7 +22,7 @@ public class CustomerController {
     public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
 
 
-    @GetMapping()
+    @GetMapping(CUSTOMER_PATH)
     public List<Customer> listAllCustomers(){
         return customerService.listCustomers();
     }
@@ -37,7 +37,7 @@ public class CustomerController {
         return customerService.deleteCustomerId(customerId);
     }
 
-    @PostMapping
+    @PostMapping(CUSTOMER_PATH)
     public ResponseEntity createBook(@RequestBody Customer customer){
         Customer customerCreated= customerService.saveCustomer(customer);
 

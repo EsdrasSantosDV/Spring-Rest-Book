@@ -8,19 +8,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.core.Is.is;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -37,11 +41,33 @@ class CustomerControllerTest {
 
     CustomerServiceImpl customerServiceImpl;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
+
 
     @BeforeEach
     void setUp() {
         customerServiceImpl=new CustomerServiceImpl();
     }
+
+
+
+    @Test
+    void putCustomer() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        mockMvc.perform(put(CustomerController.CUSTOMER_PATH + '/' + customer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                        .andExpect(status().isNoContent());
+
+        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+    }
+
 
     @Test
     void createCustomer() throws Exception {
@@ -52,12 +78,12 @@ class CustomerControllerTest {
 
         given(customerService.saveCustomer((any(Customer.class)))).willReturn(customerServiceImpl.listCustomers().get(1));
 
-        mockMvc.perform(post("/api/v1/customer")
+        mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createCustomer)))
                         .andExpect(status().isCreated())
-                         .andExpect(header().string("Location", "/api/v1/customer/" + customerServiceImpl.listCustomers().get(1).getId().toString()))
+                         .andExpect(header().string("Location", CustomerController.CUSTOMER_PATH+'/' + customerServiceImpl.listCustomers().get(1).getId().toString()))
                          .andExpect(header().exists("Location"));
 
     }
@@ -67,7 +93,7 @@ class CustomerControllerTest {
     void listAllCustomers() throws Exception {
         given(customerService.listCustomers()).willReturn(customerServiceImpl.listCustomers());
 
-        mockMvc.perform(get("/api/v1/customer") .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(BookController.BOOK_PATH) .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.length()",is(3)))
@@ -81,7 +107,7 @@ class CustomerControllerTest {
 
         given(customerService.getCustomerId(customerServiceImpl.listCustomers().get(0).getId())).willReturn(customerServiceImpl.listCustomers().get(0));
 
-        mockMvc.perform(get("/api/v1/customer/" + customerServiceImpl.listCustomers().get(0).getId()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH+ '/' + customerServiceImpl.listCustomers().get(0).getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.id", is(customerServiceImpl.listCustomers().get(0).getId().toString())))

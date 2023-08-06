@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,8 +22,8 @@ import static org.hamcrest.core.Is.is;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,10 +46,29 @@ class BookControllerTest {
 
     BookServiceImpl bookServiceImpl;
 
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Book> bookArgumentCaptor;
+
     @BeforeEach
     void setUp() {
         bookServiceImpl=new BookServiceImpl();
     }
+
+
+    @Test
+    void updateBook() throws Exception {
+        Book book=bookServiceImpl.listBooks().get(0);
+        mockMvc.perform(put(BookController.BOOK_PATH+"/"+book.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isNoContent());
+        verify(bookService).updateBookById(any(UUID.class), any(Book.class));
+    }
+
     @Test
     void createBook() throws Exception {
         Book testBook=bookServiceImpl.listBooks().get(0);
@@ -56,7 +77,7 @@ class BookControllerTest {
 
 
         given(bookService.saveNewBook(any(Book.class))).willReturn(bookServiceImpl.listBooks().get(1));
-        mockMvc.perform(post("/api/v1/book")
+        mockMvc.perform(post(BookController.BOOK_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testBook)))
@@ -71,7 +92,7 @@ class BookControllerTest {
         //
         given(bookService.listBooks()).willReturn(bookServiceImpl.listBooks());
 
-        mockMvc.perform(get("/api/v1/book")
+        mockMvc.perform(get(BookController.BOOK_PATH)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -89,7 +110,7 @@ class BookControllerTest {
         //ESSAS IMPORTACOES ESTATICAS SÃO UMA MERDA
         //SEMPRE COPIA ELAS DAQUI
         //TO TESTNBADO PRO PRIMEIRO LIVRO QUE TA NO SET, AGORA TO ESPERANDO QUE SEJA UM JSON
-        mockMvc.perform(get("/api/v1/book/" +  testBook.getId())
+        mockMvc.perform(get(BookController.BOOK_PATH+'/' +  testBook.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
