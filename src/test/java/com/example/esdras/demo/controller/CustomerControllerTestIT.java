@@ -8,6 +8,9 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
@@ -29,6 +32,26 @@ class CustomerControllerTestIT {
     @Autowired
     CustomerRepository customerRepository;
 
+
+
+    @Rollback
+    @Transactional
+    @Test
+    void createCustomer() {
+
+        CustomerDto dto=CustomerDto.builder().name("Teste").build();
+
+        ResponseEntity responseEntity= customerController.createCustomer(dto);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+        String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID savedUUID = UUID.fromString(locationUUID[4]);
+
+        CustomerEntity customer=customerRepository.findById(savedUUID).get();
+        assertThat(customer.getName()).isEqualTo(dto.getName());
+        assertThat(customer.getId()).isEqualTo(savedUUID);
+    }
 
     @Test
     void listAllCustomers() {

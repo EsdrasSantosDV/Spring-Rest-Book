@@ -34,7 +34,7 @@ public class BookServiceJpa implements BookService {
 
     @Override
     public BookDto saveNewBook(BookDto book) {
-        return null;
+        return bookMapper.bookEntityToBookDto(bookRepository.save(bookMapper.bookDtoToBookEntity(book)));
     }
 
     @Override

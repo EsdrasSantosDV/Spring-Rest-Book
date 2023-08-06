@@ -39,7 +39,7 @@ public class CustomerController {
     }
 
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity createBook(@RequestBody CustomerDto customer){
+    public ResponseEntity createCustomer(@RequestBody CustomerDto customer){
         CustomerDto customerCreated= customerService.saveCustomer(customer);
 
         HttpHeaders headers = new HttpHeaders();
