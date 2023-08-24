@@ -7,10 +7,12 @@ import com.example.esdras.demo.services.interfaces.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -38,17 +40,54 @@ public class BookServiceJpa implements BookService {
     }
 
     @Override
-    public BookDto updateBookById(UUID id, BookDto book) {
-        return null;
+    public Optional<BookDto> updateBookById(UUID id, BookDto book) {
+        AtomicReference<Optional<BookDto>> atomicReference = new AtomicReference<>();
+
+        bookRepository.findById(id).ifPresentOrElse(foundBook -> {
+            foundBook.setNameBook(book.getNameBook());
+            foundBook.setPrice(book.getPrice());
+            foundBook.setDescriptionName(book.getDescriptionName());
+            atomicReference.set(Optional.of(bookMapper
+                    .bookEntityToBookDto(bookRepository.save(foundBook))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+
+        return atomicReference.get();
     }
 
     @Override
-    public BookDto deleteBookById(UUID id) {
-        return null;
+    public Boolean deleteBookById(UUID id) {
+        if (bookRepository.existsById(id)) {
+            bookRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public BookDto patchBookById(UUID id, BookDto book) {
-        return null;
+    public Optional<BookDto> patchBookById(UUID id, BookDto book) {
+        AtomicReference<Optional<BookDto>> atomicReference = new AtomicReference<>();
+
+        bookRepository.findById(id).ifPresentOrElse(foundBook -> {
+            if (StringUtils.hasText(book.getNameBook())){
+                foundBook.setNameBook(book.getNameBook());
+            }
+
+            if(StringUtils.hasText(book.getDescriptionName())){
+                foundBook.setDescriptionName(book.getDescriptionName());
+            }
+
+            if(book.getPrice()!=null){
+                foundBook.setPrice(book.getPrice());
+            }
+
+            atomicReference.set(Optional.of(bookMapper
+                    .bookEntityToBookDto(bookRepository.save(foundBook))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+
+        return atomicReference.get();
     }
 }

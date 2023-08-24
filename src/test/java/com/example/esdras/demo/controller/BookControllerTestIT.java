@@ -3,6 +3,8 @@ package com.example.esdras.demo.controller;
 import com.example.esdras.demo.dto.BookDto;
 import com.example.esdras.demo.dto.CustomerDto;
 import com.example.esdras.demo.entities.BookEntity;
+import com.example.esdras.demo.exceptions.NotFoundException;
+import com.example.esdras.demo.mappers.BookMapper;
 import com.example.esdras.demo.repositories.BookRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 
+import java.awt.print.Book;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +32,28 @@ class BookControllerTestIT {
     @Autowired
     BookRepository bookRepository;
 
+    @Autowired
+    BookMapper bookMapper;
+
+    @Test
+    void testDeleteByIDNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            bookController.deleteBookById(UUID.randomUUID());
+        });
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void deleteByIdFound() {
+        BookEntity book = bookRepository.findAll().get(0);
+
+        ResponseEntity responseEntity = bookController.deleteBookById(book.getId());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        assertThat(bookRepository.findById(book.getId()).isEmpty());
+    }
+
 
     @Test
     void listAllBooks() {
@@ -36,6 +61,33 @@ class BookControllerTestIT {
 
         assertThat(dtos.size()).isEqualTo(3);
         assertNotNull(dtos);
+    }
+
+
+    @Test
+    void testUpdateNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            bookController.updateBookById(UUID.randomUUID(), BookDto.builder().build());
+        });
+    }
+
+
+    @Rollback
+    @Transactional
+    @Test
+    void updateExistingBeer() {
+        BookEntity beer = bookRepository.findAll().get(0);
+        BookDto bookDto = bookMapper.bookEntityToBookDto(beer);
+        bookDto.setId(null);
+        bookDto.setVersion(null);
+        final String beerName = "UPDATED";
+        bookDto.setNameBook(beerName);
+
+        ResponseEntity responseEntity = bookController.updateBookById(beer.getId(), bookDto);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        BookEntity updatedBeer = bookRepository.findById(beer.getId()).get();
+        assertThat(updatedBeer.getNameBook()).isEqualTo(beerName);
     }
 
     @Test

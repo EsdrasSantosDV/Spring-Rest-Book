@@ -80,6 +80,8 @@ class BookControllerTest {
     @Test
     void deleteBook()throws Exception{
         BookDto book=bookServiceImpl.listBooks().get(0);
+        given(bookService.deleteBookById(any())).willReturn(true);
+
         mockMvc.perform(delete(BookController.BOOK_PATH_ID,book.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -92,6 +94,8 @@ class BookControllerTest {
     @Test
     void updateBook() throws Exception {
         BookDto book=bookServiceImpl.listBooks().get(0);
+
+        given(bookService.updateBookById(any(), any())).willReturn(Optional.of(book));
         mockMvc.perform(put(BookController.BOOK_PATH+"/"+book.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -16,11 +16,11 @@ public interface BookService
 
     BookDto saveNewBook(BookDto book);
 
-    BookDto updateBookById(UUID id, BookDto book);
+    Optional<BookDto> updateBookById(UUID id, BookDto book);
 
-    BookDto deleteBookById(UUID id);
+    Boolean deleteBookById(UUID id);
 
-    BookDto patchBookById(UUID id, BookDto book);
+    Optional<BookDto> patchBookById(UUID id, BookDto book);
 
 
 }
