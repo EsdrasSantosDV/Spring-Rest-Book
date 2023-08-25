@@ -7,10 +7,12 @@ import com.example.esdras.demo.services.interfaces.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -41,8 +43,18 @@ public class CustomerServiceJpa implements CustomerService {
     }
 
     @Override
-    public CustomerDto updateCustomerById(UUID id, CustomerDto customer) {
-        return null;
+    public Optional<CustomerDto> updateCustomerById(UUID id, CustomerDto customer) {
+        AtomicReference<Optional<CustomerDto>> atomicReference = new AtomicReference<>();
+
+        customerRepository.findById(id).ifPresentOrElse(foundCustomer -> {
+            foundCustomer.setName(customer.getName());
+            atomicReference.set(Optional.of(customerMapper
+                    .customerEntityToCustomerDto(customerRepository.save(foundCustomer))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+
+        return atomicReference.get();
     }
 
     @Override
@@ -55,7 +67,19 @@ public class CustomerServiceJpa implements CustomerService {
     }
 
     @Override
-    public CustomerDto patchCustomer(UUID id, CustomerDto customer) {
-        return null;
+    public Optional<CustomerDto> patchCustomer(UUID id, CustomerDto customer) {
+        AtomicReference<Optional<CustomerDto>> atomicReference = new AtomicReference<>();
+
+        customerRepository.findById(id).ifPresentOrElse(foundCustomer -> {
+            if (StringUtils.hasText(customer.getName())){
+                foundCustomer.setName(customer.getName());
+            }
+            atomicReference.set(Optional.of(customerMapper
+                    .customerEntityToCustomerDto(customerRepository.save(foundCustomer))));
+        }, () -> {
+            atomicReference.set(Optional.empty());
+        });
+
+        return atomicReference.get();
     }
 }

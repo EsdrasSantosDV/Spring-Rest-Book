@@ -92,7 +92,8 @@ class CustomerControllerTest {
     @Test
     void putCustomer() throws Exception {
         CustomerDto customer = customerServiceImpl.listCustomers().get(0);
-
+        given(customerService.updateCustomerById(any(), any())).willReturn(Optional.of(CustomerDto.builder()
+                .build()));
         mockMvc.perform(put(CustomerController.CUSTOMER_PATH + '/' + customer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)

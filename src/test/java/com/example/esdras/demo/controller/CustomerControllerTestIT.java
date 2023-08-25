@@ -3,6 +3,7 @@ package com.example.esdras.demo.controller;
 import com.example.esdras.demo.dto.CustomerDto;
 import com.example.esdras.demo.entities.CustomerEntity;
 import com.example.esdras.demo.exceptions.NotFoundException;
+import com.example.esdras.demo.mappers.CustomerMapper;
 import com.example.esdras.demo.repositories.CustomerRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,46 @@ class CustomerControllerTestIT {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    CustomerMapper customerMapper;
+
+
+    @Rollback
+    @Transactional
+    @Test
+    void deleteByIdFound() {
+        CustomerEntity customer = customerRepository.findAll().get(0);
+
+        ResponseEntity responseEntity = customerController.deleteCustomerById(customer.getId());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        assertThat(customerRepository.findById(customer.getId()).isEmpty());
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            customerController.deleteCustomerById(UUID.randomUUID());
+        });
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void updateExistingBeer() {
+        CustomerEntity customer = customerRepository.findAll().get(0);
+        CustomerDto customerDTO = customerMapper.customerEntityToCustomerDto(customer);
+        customerDTO.setId(null);
+        customerDTO.setVersion(null);
+        final String customerName = "UPDATED";
+        customerDTO.setName(customerName);
+
+        ResponseEntity responseEntity = customerController.updateCustomerByID(customer.getId(), customerDTO);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        CustomerEntity updatedCustomer = customerRepository.findById(customer.getId()).get();
+        assertThat(updatedCustomer.getName()).isEqualTo(customerName);
+    }
 
 
     @Rollback
