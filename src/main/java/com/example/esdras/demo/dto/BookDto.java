@@ -21,6 +21,9 @@ public class BookDto {
     @NotBlank
     @NotNull
     private String nameBook;
+    @NotNull
+    @NotBlank
     private String descriptionName;
+    @NotNull
     private BigDecimal price;
 }
