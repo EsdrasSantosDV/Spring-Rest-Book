@@ -59,6 +59,19 @@ class BookControllerTest {
     }
 
     @Test
+    void testCreateBeerNullBookName()throws Exception{
+        BookDto bookDto=BookDto.builder().build();
+        String beerDtoJson=objectMapper.writeValueAsString(bookDto);
+        given(bookService.saveNewBook(any(BookDto.class))).willReturn(bookServiceImpl.listBooks().get(1));
+
+        mockMvc.perform(post(BookController.BOOK_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(beerDtoJson))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     void patchBook()throws Exception{
         BookDto book=bookServiceImpl.listBooks().get(0);
         Map<String,Object> bookMap=new HashMap<>();
