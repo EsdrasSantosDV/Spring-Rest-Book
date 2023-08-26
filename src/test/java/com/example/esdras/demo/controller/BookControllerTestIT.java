@@ -6,21 +6,31 @@ import com.example.esdras.demo.entities.BookEntity;
 import com.example.esdras.demo.exceptions.NotFoundException;
 import com.example.esdras.demo.mappers.BookMapper;
 import com.example.esdras.demo.repositories.BookRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.awt.print.Book;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -35,7 +45,35 @@ class BookControllerTestIT {
     @Autowired
     BookMapper bookMapper;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    WebApplicationContext wac;
+
+    MockMvc mockMvc;
+
+
+
+    //BOTAR O CONTEXTO DO SPRING
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
+
     @Test
+    void testPatchBeerBadName() throws Exception {
+        BookEntity book = bookRepository.findAll().get(0);
+
+        Map<String, Object> bookMap = new HashMap<>();
+        bookMap.put("nameBook", "New Name 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+
+        mockMvc.perform(patch(BookController.BOOK_PATH_ID, book.getId()).
+                contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).
+                content(objectMapper.writeValueAsString(bookMap))).andExpect(status().isBadRequest());
+
+    }
+        @Test
     void testDeleteByIDNotFound() {
         assertThrows(NotFoundException.class, () -> {
             bookController.deleteBookById(UUID.randomUUID());

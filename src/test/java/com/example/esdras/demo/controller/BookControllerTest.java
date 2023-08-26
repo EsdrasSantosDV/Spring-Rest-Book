@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,15 +60,36 @@ class BookControllerTest {
     }
 
     @Test
-    void testCreateBeerNullBookName()throws Exception{
-        BookDto bookDto=BookDto.builder().build();
-        String beerDtoJson=objectMapper.writeValueAsString(bookDto);
+    void testUpdateBookBlankName() throws Exception {
+        BookDto book = bookServiceImpl.listBooks().get(0);
+        book.setNameBook("");
+        given(bookService.updateBookById(any(), any())).willReturn(Optional.of(book));
+
+        mockMvc.perform(put(BookController.BOOK_PATH_ID, book.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(1)));
+
+    }
+
+    @Test
+    void testCreateBeerNullBeerName() throws Exception {
+
+        BookDto bookDto = BookDto.builder().build();
+
         given(bookService.saveNewBook(any(BookDto.class))).willReturn(bookServiceImpl.listBooks().get(1));
 
-        mockMvc.perform(post(BookController.BOOK_PATH)
+        MvcResult mvcResult = mockMvc.perform(post(BookController.BOOK_PATH)
+                        .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(beerDtoJson))
-                .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(bookDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(6)))
+                .andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
     }
 
 

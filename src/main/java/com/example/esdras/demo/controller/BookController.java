@@ -58,7 +58,7 @@ public class BookController {
 
 
     @PutMapping(BOOK_PATH_ID)
-    public ResponseEntity updateBookById(@PathVariable("bookId") UUID id, @RequestBody BookDto book){
+    public ResponseEntity updateBookById(@PathVariable("bookId") UUID id, @Validated @RequestBody BookDto book){
         if( bookService.updateBookById(id, book).isEmpty()){
             throw new NotFoundException();
         }
